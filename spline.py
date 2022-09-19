@@ -15,11 +15,10 @@ class Spline:  # natural cubic spline, one dimensional
         return [(self.t[i + 1] - self.t[i]) for i in range(self.n - 1)]
 
     def linear_spline(self):
-        m = []
-        for i in range(self.n - 1):
-            slope = (self.y[i + 1] - self.y[i]) / (self.t[i + 1] - self.t[i])
-            m.append(slope)
-        return m
+        return [
+            (self.y[i + 1] - self.y[i]) / (self.t[i + 1] - self.t[i])
+            for i in range(self.n - 1)
+        ]
 
     def _find_coefficients(self):
         a = self.y
@@ -87,7 +86,7 @@ class Spline2D:  # natural cubic spline, two dimensional
         self.n = len(t)
         self.sx = Spline(t, x)
         self.sy = Spline(t, y)
-        self.curv = [self.curvature(t) for t in self.t[0:self.n - 1]]
+        self.curv = [self.curvature(t) for t in self.t[:self.n - 1]]
 
     def curvature(self, z):
         dx, ddx = self.sx.derivatives(z)
@@ -104,12 +103,9 @@ class Spline2D:  # natural cubic spline, two dimensional
         i = self._find_index(z)
         if i is None:
             return None
-        k1, sig1 = abs(np.mean(self.curv[0:i+1])), np.std(self.curv[0:i+1])
+        k1, sig1 = abs(np.mean(self.curv[:i+1])), np.std(self.curv[:i+1])
         k2, sig2 = abs(np.mean(self.curv[i::])), np.std(self.curv[i::])
-        if k1 - 2*sig1 < k2 < k1 + 2*sig1:
-            return 'curve'
-        else:
-            return 'linear'
+        return 'curve' if k1 - 2*sig1 < k2 < k1 + 2*sig1 else 'linear'
 
     def interpolate(self, z):
         if z > self.t[self.n - 1] or z < self.t[0]:
