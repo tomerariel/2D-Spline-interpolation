@@ -1,6 +1,7 @@
-import spline as sp
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
+import spline as sp
 
 t = np.linspace(0, 2 * np.pi, 20)
 kx = 2
@@ -14,9 +15,7 @@ points = [curve.interpolate(t) for t in t_range]
 px = [p[0] for p in points]
 py = [p[1] for p in points]
 plt.figure()
-plt.plot(px, py, marker='.', label='interpolation')
-plt.scatter(x, y, c='red', marker='X', label='real')
+plt.plot(px, py, marker=".", label="interpolation")
+plt.scatter(x, y, c="red", marker="X", label="real")
 plt.legend()
 plt.show()
-
-
